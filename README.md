@@ -39,7 +39,7 @@ This implementation can be found in the Extensions directory.
 
 Another important part of the networwking layer are the Decodable structs which handles the serialization of the JSON response. These struct used Decodable as this is the most apropiate convention for data that needs to be decoded from a JSON stream. We can also use Codable, but this is just a type alias that covers the usage of Encodable and Decodable protocols. In this specific case we just to decode data, so we use the specific protocol for it.
 
-This implemtation can be found in the Networking/Responses directory.
+This implementation can be found in the Networking/Responses directory.
 
 #### Defining a Shared Network Manager Utility
 
@@ -70,3 +70,9 @@ An important part of the UI development is also having a Constants file in which
 ### ViewModel Implementation (Logic)
 
 This layer is the one that connects with the viewController and receives all the action calls provided by the controller. This is the layer in which we do all logic connections and incorporate the usage of the Network Manager to gather the data needed to show (provided already parsed) and once this data arrive, the viewModel launches a delegate call indicating that the UI should be updated.
+
+As you can notice in the directory ViewModels/TopRedditViewModel.swift, this implementation keeps track of the parsed dataModel and also the state of the latest page that has been requested to the API, so the infinite scrolling can keep asking for the next pages until no more information is provided in the "after" parameter of the response. 
+
+Also you might notice there are 2 methods to request information. One is the first call of the API data which will bring the first 25 items and this will be called once the UI is loaded for the first time or if the pull to refresh element is activated. The other call is to "loadMoreData" which will use the state of the latest requested page to ask for the next 25 items and append them to the dataModel. Every time the dataModel is updated, a delegate call is invoked which will trigger an UI update in the viewController to show the data accordingly.
+
+All these Data and UI updates are correctly handled in the corresponding threads so the user can continue scrolling without any delay or freeze in the UI and as soon as the background queues completes their tasks, the images and data are reflected correctly.
